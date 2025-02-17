@@ -43,14 +43,14 @@ const elem1 = ref<HTMLElement | null>(null);
 const elem2 = ref<HTMLElement | null>(null);
 
 // Reactive point values
-const point1 = reactive({ x: 0, y: 0 });
-const point2 = reactive({ x: 0, y: 0 });
+const point1 = reactive({ x: props.x1, y: props.y1 });
+const point2 = reactive({ x: props.x2, y: props.y2 });
 
 // Update functions for each point.
 const updatePoint1 = () => {
-  const rect = elem1.value?.getBoundingClientRect();
-  const parentRect = elem1.value?.offsetParent?.getBoundingClientRect();
-  if (rect) {
+  if (elem1.value) {
+    const rect = elem1.value?.getBoundingClientRect();
+    const parentRect = elem1.value?.offsetParent?.getBoundingClientRect();
     let x = (rect.left - (parentRect?.left ?? 0)) / $scale.value;
     let y = (rect.top - (parentRect?.top ?? 0)) / $scale.value;
     const width = rect.width / $scale.value;
