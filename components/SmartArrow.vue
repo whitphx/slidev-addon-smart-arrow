@@ -1,19 +1,9 @@
-<!-- Copied from https://github.com/slidevjs/slidev/blob/149790750bf561ef48e141f4a080057cc96a39db/packages/client/builtin/Arrow.vue -->
-<!--
-
-Simple Arrow
-
-<arrow x1="10" y1="20" x2="100" y2="200" color="green" width="3" />
-
-<arrow v-bind="{ x1:10, y1:10, x2:200, y2:200 }"/>
-
--->
-
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core";
-import { ref, computed, onMounted } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { makeId } from "@slidev/client/logic/utils.ts";
 import { useSlideContext, onSlideEnter } from "@slidev/client";
+
 const props = defineProps<{
   id1?: string;
   id2?: string;
@@ -46,56 +36,23 @@ const props = defineProps<{
 
 const { $scale } = useSlideContext();
 
-const trigger = ref<number>(0);
-const onChange = () => {
-  trigger.value++;
-};
+// DOM element refs
 const elem1 = ref<HTMLElement | null>(null);
 const elem2 = ref<HTMLElement | null>(null);
-onMounted(() => {
-  if (props.id1) {
-    elem1.value = document.getElementById(props.id1);
-    if (elem1.value) {
-      const observer = new MutationObserver(onChange);
-      observer.observe(elem1.value, { attributes: true });
 
-      const elem1OffsetParent = elem1.value.offsetParent;
-      if (elem1OffsetParent) {
-        const observer = new MutationObserver(onChange);
-        observer.observe(elem1OffsetParent, { attributes: true });
-      }
-    }
-  }
-  if (props.id2) {
-    elem2.value = document.getElementById(props.id2);
-    if (elem2.value) {
-      const observer = new MutationObserver(onChange);
-      observer.observe(elem2.value, { attributes: true });
+// Reactive point values
+const point1 = reactive({ x: 0, y: 0 });
+const point2 = reactive({ x: 0, y: 0 });
 
-      const elem2OffsetParent = elem2.value.offsetParent;
-      if (elem2OffsetParent) {
-        const observer = new MutationObserver(onChange);
-        observer.observe(elem2OffsetParent, { attributes: true });
-      }
-    }
-  }
-});
-onSlideEnter(() => {
-  setTimeout(() => {
-    trigger.value++;
-  });
-});
-const point1 = computed(() => {
-  trigger.value; // Trigger re-computation
-  const elem1Rect = elem1.value?.getBoundingClientRect();
-  const elem1OffsetParentRect =
-    elem1.value?.offsetParent?.getBoundingClientRect();
-  if (elem1Rect) {
-    let x =
-      (elem1Rect.left - (elem1OffsetParentRect?.left ?? 0)) / $scale.value;
-    let y = (elem1Rect.top - (elem1OffsetParentRect?.top ?? 0)) / $scale.value;
-    const width = elem1Rect.width / $scale.value;
-    const height = elem1Rect.height / $scale.value;
+// Update functions for each point.
+const updatePoint1 = () => {
+  const rect = elem1.value?.getBoundingClientRect();
+  const parentRect = elem1.value?.offsetParent?.getBoundingClientRect();
+  if (rect) {
+    let x = (rect.left - (parentRect?.left ?? 0)) / $scale.value;
+    let y = (rect.top - (parentRect?.top ?? 0)) / $scale.value;
+    const width = rect.width / $scale.value;
+    const height = rect.height / $scale.value;
 
     if (props.pos1?.includes("right")) {
       x += width;
@@ -107,22 +64,19 @@ const point1 = computed(() => {
     } else if (!props.pos1?.includes("top")) {
       y += height / 2;
     }
-    return { x, y };
+    point1.x = x;
+    point1.y = y;
   }
-  return { x: 0, y: 0 };
-});
+};
 
-const point2 = computed(() => {
-  trigger.value; // Trigger re-computation
+const updatePoint2 = () => {
   if (elem2.value) {
-    const elem2Rect = elem2.value.getBoundingClientRect();
-    const elem2OffsetParentRect =
-      elem2.value.offsetParent?.getBoundingClientRect();
-    let x =
-      (elem2Rect.left - (elem2OffsetParentRect?.left ?? 0)) / $scale.value;
-    let y = (elem2Rect.top - (elem2OffsetParentRect?.top ?? 0)) / $scale.value;
-    const width = elem2Rect.width / $scale.value;
-    const height = elem2Rect.height / $scale.value;
+    const rect = elem2.value.getBoundingClientRect();
+    const parentRect = elem2.value.offsetParent?.getBoundingClientRect();
+    let x = (rect.left - (parentRect?.left ?? 0)) / $scale.value;
+    let y = (rect.top - (parentRect?.top ?? 0)) / $scale.value;
+    const width = rect.width / $scale.value;
+    const height = rect.height / $scale.value;
 
     if (props.pos2?.includes("right")) {
       x += width;
@@ -134,13 +88,51 @@ const point2 = computed(() => {
     } else if (!props.pos2?.includes("top")) {
       y += height / 2;
     }
-    return { x, y };
+    point2.x = x;
+    point2.y = y;
   }
-  return { x: 0, y: 0 };
+};
+
+// A single update function to refresh both points.
+const updatePoints = () => {
+  updatePoint1();
+  updatePoint2();
+};
+
+onMounted(() => {
+  if (props.id1) {
+    elem1.value = document.getElementById(props.id1);
+    if (elem1.value) {
+      const observer = new MutationObserver(updatePoints);
+      observer.observe(elem1.value, { attributes: true });
+      const parent = elem1.value.offsetParent;
+      if (parent) {
+        const parentObserver = new MutationObserver(updatePoints);
+        parentObserver.observe(parent, { attributes: true });
+      }
+    }
+  }
+  if (props.id2) {
+    elem2.value = document.getElementById(props.id2);
+    if (elem2.value) {
+      const observer = new MutationObserver(updatePoints);
+      observer.observe(elem2.value, { attributes: true });
+      const parent = elem2.value.offsetParent;
+      if (parent) {
+        const parentObserver = new MutationObserver(updatePoints);
+        parentObserver.observe(parent, { attributes: true });
+      }
+    }
+  }
+  updatePoints(); // Do an initial update.
+});
+
+// Also update when the slide is entered.
+onSlideEnter(() => {
+  setTimeout(updatePoints);
 });
 
 const emit = defineEmits(["dblclick", "clickOutside"]);
-
 const id = makeId();
 
 const markerAttrs = {
@@ -157,8 +149,8 @@ onClickOutside(clickArea, () => emit("clickOutside"));
 <template>
   <svg
     class="absolute left-0 top-0"
-    :width="Math.max(+point1.x, +point2.x) + 50"
-    :height="Math.max(+point1.y, +point2.y) + 50"
+    :width="Math.max(point1.x, point2.x) + 50"
+    :height="Math.max(point1.y, point2.y) + 50"
   >
     <defs>
       <marker :id="id" markerWidth="10" refX="9" v-bind="markerAttrs">
