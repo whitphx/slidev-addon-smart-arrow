@@ -28,37 +28,69 @@ const props = defineProps<{
 
 const { $scale } = useSlideContext();
 
-const elem1 = ref<HTMLElement | null>(null)
-const elem2 = ref<HTMLElement | null>(null)
+const elem1Rect = ref<DOMRect | null>(null);
+const elem2Rect = ref<DOMRect | null>(null);
+const elem1OffsetParentRect = ref<DOMRect | null>(null);
+const elem2OffsetParentRect = ref<DOMRect | null>(null);
 onMounted(() => {
   if (props.id1) {
-    elem1.value = document.getElementById(props.id1);
+    const elem = document.getElementById(props.id1)
+    if (elem) {
+      const onChange = () => {
+        elem1Rect.value = elem.getBoundingClientRect()
+      }
+      onChange();
+      const observer = new MutationObserver(onChange)
+      observer.observe(elem, { attributes: true });
+
+      const elem1OffsetParent = elem.offsetParent
+      if (elem1OffsetParent) {
+        const onChange = () => {
+          elem1OffsetParentRect.value = elem1OffsetParent.getBoundingClientRect()
+        }
+        onChange();
+        const observer = new MutationObserver(onChange)
+        observer.observe(elem1OffsetParent, { attributes: true });
+      }
+    }
   }
   if (props.id2) {
-    elem2.value = document.getElementById(props.id2)
+    const elem = document.getElementById(props.id2)
+    if (elem) {
+      const onChange = () => {
+        elem2Rect.value = elem.getBoundingClientRect()
+      }
+      onChange();
+      const observer = new MutationObserver(onChange)
+      observer.observe(elem, { attributes: true });
+
+      const elem2OffsetParent = elem.offsetParent
+      if (elem2OffsetParent) {
+        const onChange = () => {
+          elem2OffsetParentRect.value = elem2OffsetParent.getBoundingClientRect()
+        }
+        onChange();
+        const observer = new MutationObserver(onChange)
+        observer.observe(elem2OffsetParent, { attributes: true });
+      }
+    }
   }
 });
 const pos1 = computed(() => {
-  if (elem1.value) {
-    const elem1OffsetParent = elem1.value.offsetParent;
-    const elem1OffsetParentRect = elem1OffsetParent?.getBoundingClientRect();
-    const rect1 = elem1.value.getBoundingClientRect();
+  if (elem1Rect.value) {
     return {
-      x: (rect1.left - (elem1OffsetParentRect?.left ?? 0)) / $scale.value,
-      y: (rect1.top - (elem1OffsetParentRect?.top ?? 0)) / $scale.value,
+      x: (elem1Rect.value.left - (elem1OffsetParentRect.value?.left ?? 0)) / $scale.value,
+      y: (elem1Rect.value.top - (elem1OffsetParentRect.value?.top ?? 0)) / $scale.value,
     }
   }
   return { x: 0, y: 0 }
 });
 
 const pos2 = computed(() => {
-  if (elem2.value) {
-    const elem2OffsetParent = elem2.value.offsetParent;
-    const elem2OffsetParentRect = elem2OffsetParent?.getBoundingClientRect();
-    const rect2 = elem2.value.getBoundingClientRect();
+  if (elem2Rect.value) {
     return {
-      x: (rect2.left - (elem2OffsetParentRect?.left ?? 0)) / $scale.value,
-      y: (rect2.top - (elem2OffsetParentRect?.top ?? 0)) / $scale.value,
+      x: (elem2Rect.value.left - (elem2OffsetParentRect.value?.left ?? 0)) / $scale.value,
+      y: (elem2Rect.value.top - (elem2OffsetParentRect.value?.top ?? 0)) / $scale.value,
     }
   }
   return { x: 0, y: 0 }
