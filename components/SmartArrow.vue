@@ -43,8 +43,8 @@ const elem1 = ref<HTMLElement | null>(null);
 const elem2 = ref<HTMLElement | null>(null);
 
 // Reactive point values
-const point1 = reactive({ x: props.x1, y: props.y1 });
-const point2 = reactive({ x: props.x2, y: props.y2 });
+const point1 = reactive({ x: Number(props.x1 ?? 0), y: Number(props.y1 ?? 0) });
+const point2 = reactive({ x: Number(props.x2 ?? 0), y: Number(props.y2 ?? 0) });
 
 // Update functions for each point.
 const updatePoint1 = () => {
