@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core";
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import { makeId } from "@slidev/client/logic/utils.ts";
 import { useSlideContext, onSlideEnter } from "@slidev/client";
+import roughjs from "roughjs";
 
 const props = defineProps<{
   id1?: string;
@@ -29,6 +30,7 @@ const props = defineProps<{
   y1?: number | string;
   x2?: number | string;
   y2?: number | string;
+  rough?: boolean;
   width?: number | string;
   color?: string;
   twoWay?: boolean;
@@ -142,6 +144,60 @@ const markerAttrs = {
   orient: "auto",
 };
 
+const roughSvg = computed(() => {
+  if (!props.rough) return null;
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const rc = roughjs.svg(svg);
+
+  // Calculate arrow direction and position
+  const dx = point2.x - point1.x;
+  const dy = point2.y - point1.y;
+  const angle = Math.atan2(dy, dx);
+
+  // Arrow head size
+  const arrowSize = 20;
+  const arrowAngle = Math.PI / 6; // 30 degrees
+
+  // Create rough line
+  const line = rc.line(point1.x, point1.y, point2.x, point2.y, {
+    stroke: props.color || "currentColor",
+    strokeWidth: Number(props.width) || 2,
+  });
+
+  // Create arrow heads
+  const elementSVGs = [line.outerHTML];
+
+  // Function to create arrow head points
+  const createArrowHead = (tipX: number, tipY: number, baseAngle: number) => {
+    const x1 = tipX - arrowSize * Math.cos(baseAngle - arrowAngle);
+    const y1 = tipY - arrowSize * Math.sin(baseAngle - arrowAngle);
+    const x2 = tipX - arrowSize * Math.cos(baseAngle + arrowAngle);
+    const y2 = tipY - arrowSize * Math.sin(baseAngle + arrowAngle);
+
+    return (
+      rc.line(x1, y1, tipX, tipY, {
+        stroke: props.color || "currentColor",
+        strokeWidth: Number(props.width) || 2,
+      }).outerHTML +
+      rc.line(x2, y2, tipX, tipY, {
+        stroke: props.color || "currentColor",
+        strokeWidth: Number(props.width) || 2,
+      }).outerHTML
+    );
+  };
+
+  // Forward arrow
+  elementSVGs.push(createArrowHead(point2.x, point2.y, angle));
+
+  // Reverse arrow for two-way
+  if (props.twoWay) {
+    elementSVGs.push(createArrowHead(point1.x, point1.y, angle + Math.PI));
+  }
+
+  return elementSVGs.join("");
+});
+
 const clickArea = ref<HTMLElement>();
 onClickOutside(clickArea, () => emit("clickOutside"));
 </script>
@@ -152,39 +208,44 @@ onClickOutside(clickArea, () => emit("clickOutside"));
     :width="Math.max(point1.x, point2.x) + 50"
     :height="Math.max(point1.y, point2.y) + 50"
   >
-    <defs>
-      <marker :id="id" markerWidth="10" refX="9" v-bind="markerAttrs">
-        <polygon
-          points="0 0, 10 3.5, 0 7"
-          :fill="color || 'currentColor'"
-          @dblclick="emit('dblclick')"
-        />
-      </marker>
-      <marker
-        v-if="twoWay"
-        :id="`${id}-rev`"
-        markerWidth="20"
-        refX="11"
-        v-bind="markerAttrs"
-      >
-        <polygon
-          points="20 0, 10 3.5, 20 7"
-          :fill="color || 'currentColor'"
-          @dblclick="emit('dblclick')"
-        />
-      </marker>
-    </defs>
-    <line
-      :x1="point1.x"
-      :y1="point1.y"
-      :x2="point2.x"
-      :y2="point2.y"
-      :stroke="color || 'currentColor'"
-      :stroke-width="width || 2"
-      :marker-end="`url(#${id})`"
-      :marker-start="twoWay ? `url(#${id}-rev)` : 'none'"
-      @dblclick="emit('dblclick')"
-    />
+    <template v-if="props.rough">
+      <g v-html="roughSvg" @dblclick="emit('dblclick')" />
+    </template>
+    <template v-else>
+      <defs>
+        <marker :id="id" markerWidth="10" refX="9" v-bind="markerAttrs">
+          <polygon
+            points="0 0, 10 3.5, 0 7"
+            :fill="color || 'currentColor'"
+            @dblclick="emit('dblclick')"
+          />
+        </marker>
+        <marker
+          v-if="twoWay"
+          :id="`${id}-rev`"
+          markerWidth="20"
+          refX="11"
+          v-bind="markerAttrs"
+        >
+          <polygon
+            points="20 0, 10 3.5, 20 7"
+            :fill="color || 'currentColor'"
+            @dblclick="emit('dblclick')"
+          />
+        </marker>
+      </defs>
+      <line
+        :x1="point1.x"
+        :y1="point1.y"
+        :x2="point2.x"
+        :y2="point2.y"
+        :stroke="color || 'currentColor'"
+        :stroke-width="width || 2"
+        :marker-end="`url(#${id})`"
+        :marker-start="twoWay ? `url(#${id}-rev)` : 'none'"
+        @dblclick="emit('dblclick')"
+      />
+    </template>
     <line
       ref="clickArea"
       :x1="point1.x"
