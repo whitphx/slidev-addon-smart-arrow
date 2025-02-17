@@ -2,6 +2,10 @@
 
 # Smart Arrow
 
+---
+
+# Demo
+
 <div id="block1">Block 1</div>
 
 <div v-click>
@@ -20,3 +24,7 @@
 <SmartArrow x1="10" y1="20" x2="100" y2="200" color="green" width="3"  />
 
 <SmartArrow id1="block1" pos1="bottomleft" id2="block2" pos2="topleft" color="red" width="3"  />
+
+---
+
+# Next page

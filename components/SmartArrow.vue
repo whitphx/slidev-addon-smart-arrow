@@ -13,7 +13,7 @@ Simple Arrow
 import { onClickOutside } from '@vueuse/core'
 import { ref, computed, onMounted } from 'vue'
 import { makeId } from '@slidev/client/logic/utils.ts'
-import { useSlideContext } from "@slidev/client";
+import { useSlideContext, onSlideEnter } from "@slidev/client";
 const props = defineProps<{
   id1?: string;
   id2?: string;
@@ -64,6 +64,11 @@ onMounted(() => {
     }
   }
 });
+onSlideEnter(() => {
+  setTimeout(() => {
+    trigger.value++;
+  });
+})
 const point1 = computed(() => {
   trigger.value;  // Trigger re-computation
   const elem1Rect = elem1.value?.getBoundingClientRect();
