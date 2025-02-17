@@ -17,6 +17,7 @@ import { useSlideContext } from "@slidev/client";
 const props = defineProps<{
   id1?: string;
   id2?: string;
+
   x1?: number | string;
   y1?: number | string;
   x2?: number | string;
@@ -76,7 +77,7 @@ onMounted(() => {
     }
   }
 });
-const pos1 = computed(() => {
+const point1 = computed(() => {
   if (elem1Rect.value) {
     return {
       x: (elem1Rect.value.left - (elem1OffsetParentRect.value?.left ?? 0)) / $scale.value,
@@ -86,7 +87,7 @@ const pos1 = computed(() => {
   return { x: 0, y: 0 }
 });
 
-const pos2 = computed(() => {
+const point2 = computed(() => {
   if (elem2Rect.value) {
     return {
       x: (elem2Rect.value.left - (elem2OffsetParentRect.value?.left ?? 0)) / $scale.value,
@@ -114,8 +115,8 @@ onClickOutside(clickArea, () => emit('clickOutside'))
 <template>
   <svg
     class="absolute left-0 top-0"
-    :width="Math.max(+pos1.x, +pos2.x) + 50"
-    :height="Math.max(+pos1.y, +pos2.y) + 50"
+    :width="Math.max(+point1.x, +point2.x) + 50"
+    :height="Math.max(+point1.y, +point2.y) + 50"
   >
     <defs>
       <marker :id="id" markerWidth="10" refX="9" v-bind="markerAttrs">
@@ -126,7 +127,7 @@ onClickOutside(clickArea, () => emit('clickOutside'))
       </marker>
     </defs>
     <line
-      :x1="pos1.x" :y1="pos1.y" :x2="pos2.x" :y2="pos2.y"
+      :x1="point1.x" :y1="point1.y" :x2="point2.x" :y2="point2.y"
       :stroke="color || 'currentColor'"
       :stroke-width="width || 2"
       :marker-end="`url(#${id})`"
@@ -135,7 +136,7 @@ onClickOutside(clickArea, () => emit('clickOutside'))
     />
     <line
       ref="clickArea"
-      :x1="pos1.x" :y1="pos1.y" :x2="pos2.x" :y2="pos2.y"
+      :x1="point1.x" :y1="point1.y" :x2="point2.x" :y2="point2.y"
       stroke="transparent"
       stroke-linecap="round"
       :stroke-width="20"
