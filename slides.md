@@ -19,4 +19,4 @@
 
 <SmartArrow x1="10" y1="20" x2="100" y2="200" color="green" width="3"  />
 
-<SmartArrow id1="block1" id2="block2" color="red" width="3"  />
+<SmartArrow id1="block1" pos1="bottomleft" id2="block2" pos2="topleft" color="red" width="3"  />

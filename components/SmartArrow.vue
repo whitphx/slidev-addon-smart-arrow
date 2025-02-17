@@ -17,7 +17,8 @@ import { useSlideContext } from "@slidev/client";
 const props = defineProps<{
   id1?: string;
   id2?: string;
-
+  pos1?: "top" | "bottom" | "left" | "right" | "topleft" | "topright" | "bottomleft" | "bottomright";
+  pos2?: "top" | "bottom" | "left" | "right" | "topleft" | "topright" | "bottomleft" | "bottomright";
   x1?: number | string;
   y1?: number | string;
   x2?: number | string;
@@ -79,20 +80,44 @@ onMounted(() => {
 });
 const point1 = computed(() => {
   if (elem1Rect.value) {
-    return {
-      x: (elem1Rect.value.left - (elem1OffsetParentRect.value?.left ?? 0)) / $scale.value,
-      y: (elem1Rect.value.top - (elem1OffsetParentRect.value?.top ?? 0)) / $scale.value,
+    let x = (elem1Rect.value.left - (elem1OffsetParentRect.value?.left ?? 0)) / $scale.value;
+    let y = (elem1Rect.value.top - (elem1OffsetParentRect.value?.top ?? 0)) / $scale.value;
+    const width = elem1Rect.value.width / $scale.value;
+    const height = elem1Rect.value.height / $scale.value;
+
+    if (props.pos1?.includes("right")) {
+      x += width;
+    } else if (!props.pos1?.includes("left")) {
+      x += width / 2;
     }
+    if (props.pos1?.includes("bottom")) {
+      y += height;
+    } else if (!props.pos1?.includes("top")) {
+      y += height / 2;
+    }
+    return { x, y }
   }
   return { x: 0, y: 0 }
 });
 
 const point2 = computed(() => {
   if (elem2Rect.value) {
-    return {
-      x: (elem2Rect.value.left - (elem2OffsetParentRect.value?.left ?? 0)) / $scale.value,
-      y: (elem2Rect.value.top - (elem2OffsetParentRect.value?.top ?? 0)) / $scale.value,
+    let x = (elem2Rect.value.left - (elem2OffsetParentRect.value?.left ?? 0)) / $scale.value;
+    let y = (elem2Rect.value.top - (elem2OffsetParentRect.value?.top ?? 0)) / $scale.value;
+    const width = elem2Rect.value.width / $scale.value;
+    const height = elem2Rect.value.height / $scale.value;
+
+    if (props.pos2?.includes("right")) {
+      x += width;
+    } else if (!props.pos2?.includes("left")) {
+      x += width / 2;
     }
+    if (props.pos2?.includes("bottom")) {
+      y += height;
+    } else if (!props.pos2?.includes("top")) {
+      y += height / 2;
+    }
+    return { x, y }
   }
   return { x: 0, y: 0 }
 })
