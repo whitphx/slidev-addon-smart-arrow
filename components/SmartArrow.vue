@@ -11,18 +11,37 @@ Simple Arrow
 
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { makeId } from '@slidev/client/logic/utils.ts'
 
-defineProps<{
-  x1: number | string
-  y1: number | string
-  x2: number | string
-  y2: number | string
-  width?: number | string
-  color?: string
-  twoWay?: boolean
-}>()
+const props = defineProps<{
+  id1?: string;
+  id2?: string;
+  x1?: number | string;
+  y1?: number | string;
+  x2?: number | string;
+  y2?: number | string;
+  width?: number | string;
+  color?: string;
+  twoWay?: boolean;
+}>();
+
+const pos1 = ref({ x: props.x1 ?? 0, y: props.y1 ?? 0 })
+const pos2 = ref({ x: props.x2 ?? 0, y: props.y2 ?? 0 })
+onMounted(() => {
+    if (props.id1) {
+        const elem1 = document.getElementById(props.id1)
+        if (elem1) {
+            pos1.value = { x: elem1.offsetLeft, y: elem1.offsetTop }
+        }
+    }
+    if (props.id2) {
+        const elem2 = document.getElementById(props.id2)
+        if (elem2) {
+            pos2.value = { x: elem2.offsetLeft, y: elem2.offsetTop }
+        }
+    }
+});
 
 const emit = defineEmits(['dblclick', 'clickOutside'])
 
@@ -42,8 +61,8 @@ onClickOutside(clickArea, () => emit('clickOutside'))
 <template>
   <svg
     class="absolute left-0 top-0"
-    :width="Math.max(+x1, +x2) + 50"
-    :height="Math.max(+y1, +y2) + 50"
+    :width="Math.max(+pos1.x, +pos2.x) + 50"
+    :height="Math.max(+pos1.y, +pos2.y) + 50"
   >
     <defs>
       <marker :id="id" markerWidth="10" refX="9" v-bind="markerAttrs">
@@ -54,7 +73,7 @@ onClickOutside(clickArea, () => emit('clickOutside'))
       </marker>
     </defs>
     <line
-      :x1 :y1 :x2 :y2
+      :x1="pos1.x" :y1="pos1.y" :x2="pos2.x" :y2="pos2.y"
       :stroke="color || 'currentColor'"
       :stroke-width="width || 2"
       :marker-end="`url(#${id})`"
@@ -63,7 +82,7 @@ onClickOutside(clickArea, () => emit('clickOutside'))
     />
     <line
       ref="clickArea"
-      :x1 :y1 :x2 :y2
+      :x1="pos1.x" :y1="pos1.y" :x2="pos2.x" :y2="pos2.y"
       stroke="transparent"
       stroke-linecap="round"
       :stroke-width="20"
