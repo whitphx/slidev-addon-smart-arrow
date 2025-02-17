@@ -13,7 +13,7 @@ Simple Arrow
 import { onClickOutside } from '@vueuse/core'
 import { ref, computed, onMounted } from 'vue'
 import { makeId } from '@slidev/client/logic/utils.ts'
-
+import { useSlideContext } from "@slidev/client";
 const props = defineProps<{
   id1?: string;
   id2?: string;
@@ -26,22 +26,43 @@ const props = defineProps<{
   twoWay?: boolean;
 }>();
 
-const pos1 = ref({ x: props.x1 ?? 0, y: props.y1 ?? 0 })
-const pos2 = ref({ x: props.x2 ?? 0, y: props.y2 ?? 0 })
+const { $scale } = useSlideContext();
+
+const elem1 = ref<HTMLElement | null>(null)
+const elem2 = ref<HTMLElement | null>(null)
 onMounted(() => {
-    if (props.id1) {
-        const elem1 = document.getElementById(props.id1)
-        if (elem1) {
-            pos1.value = { x: elem1.offsetLeft, y: elem1.offsetTop }
-        }
-    }
-    if (props.id2) {
-        const elem2 = document.getElementById(props.id2)
-        if (elem2) {
-            pos2.value = { x: elem2.offsetLeft, y: elem2.offsetTop }
-        }
-    }
+  if (props.id1) {
+    elem1.value = document.getElementById(props.id1);
+  }
+  if (props.id2) {
+    elem2.value = document.getElementById(props.id2)
+  }
 });
+const pos1 = computed(() => {
+  if (elem1.value) {
+    const elem1OffsetParent = elem1.value.offsetParent;
+    const elem1OffsetParentRect = elem1OffsetParent?.getBoundingClientRect();
+    const rect1 = elem1.value.getBoundingClientRect();
+    return {
+      x: (rect1.left - (elem1OffsetParentRect?.left ?? 0)) / $scale.value,
+      y: (rect1.top - (elem1OffsetParentRect?.top ?? 0)) / $scale.value,
+    }
+  }
+  return { x: 0, y: 0 }
+});
+
+const pos2 = computed(() => {
+  if (elem2.value) {
+    const elem2OffsetParent = elem2.value.offsetParent;
+    const elem2OffsetParentRect = elem2OffsetParent?.getBoundingClientRect();
+    const rect2 = elem2.value.getBoundingClientRect();
+    return {
+      x: (rect2.left - (elem2OffsetParentRect?.left ?? 0)) / $scale.value,
+      y: (rect2.top - (elem2OffsetParentRect?.top ?? 0)) / $scale.value,
+    }
+  }
+  return { x: 0, y: 0 }
+})
 
 const emit = defineEmits(['dblclick', 'clickOutside'])
 
