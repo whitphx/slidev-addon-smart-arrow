@@ -27,6 +27,8 @@
 
 <FancyArrow id1="block1" pos1="bottom" id2="block2" pos2="top" color="red" width="3" rough twoWay />
 
+<FancyArrow id1="block1" pos1="bottomright" id2="block2" pos2="topright" color="red" width="3" rough twoWay arc="0.5" />
+
 ---
 
 # Next page

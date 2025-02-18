@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
+import { slideWidth, slideHeight } from "@slidev/client";
 import { makeId } from "@slidev/client/logic/utils.ts";
 import { useElementPosition, type SnapPosition } from "./use-element-position";
 import { useRoughArrow } from "./use-rough-arrow";
@@ -18,6 +19,7 @@ const props = defineProps<{
   width?: number | string;
   color?: string;
   twoWay?: boolean;
+  arc?: number | string;
 }>();
 
 const point1 = props.id1
@@ -44,6 +46,7 @@ const roughSvg = props.rough
       color: props.color ?? "currentColor",
       width: Number(props.width ?? 2),
       twoWay: props.twoWay ?? false,
+      centerPositionParam: Number(props.arc ?? 0),
     })
   : null;
 
@@ -55,8 +58,8 @@ onClickOutside(clickArea, () => emit("clickOutside"));
   <svg
     v-if="point1 && point2"
     class="absolute left-0 top-0"
-    :width="Math.max(point1.x, point2.x) + 50"
-    :height="Math.max(point1.y, point2.y) + 50"
+    :width="slideWidth"
+    :height="slideHeight"
   >
     <template v-if="props.rough">
       <g v-html="roughSvg" @dblclick="emit('dblclick')" />
