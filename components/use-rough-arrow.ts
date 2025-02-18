@@ -50,6 +50,11 @@ export function useRoughArrow(props: {
     centerPositionParam,
   } = props;
 
+  const options = {
+    stroke: color,
+    strokeWidth: width,
+  };
+
   const svg = ref<SVGSVGElement>(
     document.createElementNS("http://www.w3.org/2000/svg", "svg"),
   );
@@ -71,10 +76,13 @@ export function useRoughArrow(props: {
     if (centerPositionParam === 0) {
       // Straight line.
       // This can be interpreted as the arc's center is at infinity.
-      const svg = roughSvg.line(point1.x, point1.y, point2.x, point2.y, {
-        stroke: color,
-        strokeWidth: width,
-      });
+      const svg = roughSvg.line(
+        point1.x,
+        point1.y,
+        point2.x,
+        point2.y,
+        options,
+      );
       return {
         svg,
         angle1: 0,
@@ -147,10 +155,7 @@ export function useRoughArrow(props: {
       startAngle,
       endAngle,
       false,
-      {
-        stroke: color,
-        strokeWidth: width,
-      },
+      options,
     );
 
     return {
