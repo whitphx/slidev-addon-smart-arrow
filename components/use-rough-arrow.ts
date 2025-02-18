@@ -198,14 +198,14 @@ export function useRoughArrow(props: {
 
     arrowHead2.value.setAttribute(
       "transform",
-      `translate(${point2Ref.value.x},${point2Ref.value.y}) rotate(${(line.value.angle2 * 180) / Math.PI + (centerPositionParam > 0 ? 90 : -90)})`,
+      `translate(${point2Ref.value.x},${point2Ref.value.y}) rotate(${(line.value.angle2 * 180) / Math.PI + (centerPositionParam >= 0 ? 90 : -90)})`,
     );
     svg.value.appendChild(arrowHead2.value);
 
     if (twoWay) {
       arrowHead1.value.setAttribute(
         "transform",
-        `translate(${point1Ref.value.x},${point1Ref.value.y}) rotate(${(line.value.angle1 * 180) / Math.PI + (centerPositionParam > 0 ? -90 : 90)})`,
+        `translate(${point1Ref.value.x},${point1Ref.value.y}) rotate(${(line.value.angle1 * 180) / Math.PI + (centerPositionParam >= 0 ? -90 : 90)})`,
       );
       svg.value.appendChild(arrowHead1.value);
     }
