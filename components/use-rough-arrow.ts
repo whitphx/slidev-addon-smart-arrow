@@ -6,6 +6,7 @@ type RoughSVG = ReturnType<typeof roughjs.svg>;
 const createArrowHeadSvg = (
   rc: RoughSVG,
   arrowSize: number,
+  type: "line" | "polygon",
   options: Parameters<RoughSVG["line"]>[4],
 ): SVGGElement => {
   const arrowAngle = Math.PI / 6; // 30 degrees
@@ -17,11 +18,23 @@ const createArrowHeadSvg = (
 
   const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
-  const line1 = rc.line(x1, y1, 0, 0, options);
-  g.appendChild(line1);
-
-  const line2 = rc.line(x2, y2, 0, 0, options);
-  g.appendChild(line2);
+  if (type === "line") {
+    g.appendChild(rc.line(x1, y1, 0, 0, options));
+    g.appendChild(rc.line(x2, y2, 0, 0, options));
+  } else if (type === "polygon") {
+    g.appendChild(
+      rc.polygon(
+        [
+          [x1, y1],
+          [0, 0],
+          [x2, y2],
+        ],
+        options,
+      ),
+    );
+  } else {
+    throw new Error("Invalid arrow head type");
+  }
 
   return g;
 };
@@ -31,6 +44,7 @@ export function useRoughArrow(props: {
   point2: Ref<{ x: number; y: number } | undefined>;
   color: string;
   width: number;
+  arrowHeadType: "line" | "polygon";
   twoWay: boolean;
   centerPositionParam: number;
 }) {
@@ -39,6 +53,7 @@ export function useRoughArrow(props: {
     point2: point2Ref,
     color,
     width,
+    arrowHeadType,
     twoWay,
     centerPositionParam,
   } = props;
@@ -46,6 +61,8 @@ export function useRoughArrow(props: {
   const options = {
     stroke: color,
     strokeWidth: width,
+    fill: color,
+    fillStyle: "solid",
   };
 
   const svg = ref<SVGSVGElement>(
@@ -170,10 +187,20 @@ export function useRoughArrow(props: {
   });
 
   const arrowHead1 = computed(() =>
-    createArrowHeadSvg(rc.value as RoughSVG, arrowSize.value, options),
+    createArrowHeadSvg(
+      rc.value as RoughSVG,
+      arrowSize.value,
+      arrowHeadType,
+      options,
+    ),
   );
   const arrowHead2 = computed(() =>
-    createArrowHeadSvg(rc.value as RoughSVG, arrowSize.value, options),
+    createArrowHeadSvg(
+      rc.value as RoughSVG,
+      arrowSize.value,
+      arrowHeadType,
+      options,
+    ),
   );
 
   return computed(() => {

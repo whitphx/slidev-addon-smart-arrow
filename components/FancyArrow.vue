@@ -20,6 +20,7 @@ const props = defineProps<{
   color?: string;
   twoWay?: boolean;
   arc?: number | string;
+  arrowHeadType?: "line" | "polygon";
 }>();
 
 const point1 = props.id1
@@ -47,6 +48,7 @@ const roughSvg = props.rough
       width: Number(props.width ?? 2),
       twoWay: props.twoWay ?? false,
       centerPositionParam: Number(props.arc ?? 0),
+      arrowHeadType: props.arrowHeadType ?? "line",
     })
   : null;
 
