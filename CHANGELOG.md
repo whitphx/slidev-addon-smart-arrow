@@ -1,5 +1,11 @@
 # slidev-addon-fancy-arrow
 
+## 0.1.0
+
+### Minor Changes
+
+- [#6](https://github.com/whitphx/slidev-addon-fancy-arrow/pull/6) [`2662e30`](https://github.com/whitphx/slidev-addon-fancy-arrow/commit/2662e3000dd8f7036dc731ab9d99188a09068c7f) Thanks [@whitphx](https://github.com/whitphx)! - arrowHeadSize prop
+
 ## 0.0.3
 
 ### Patch Changes
