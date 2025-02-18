@@ -12,7 +12,8 @@
     "export": "slidev export",
     "lint": "eslint .",
     "format": "prettier . --write",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ci:publish": "changeset publish"
   },
   "dependencies": {
     "@slidev/cli": "^51.1.1",
