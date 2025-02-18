@@ -45,6 +45,7 @@ export function useRoughArrow(props: {
   color: string;
   width: number;
   arrowHeadType: "line" | "polygon";
+  arrowHeadSize: number | null;
   twoWay: boolean;
   centerPositionParam: number;
 }) {
@@ -54,6 +55,7 @@ export function useRoughArrow(props: {
     color,
     width,
     arrowHeadType,
+    arrowHeadSize,
     twoWay,
     centerPositionParam,
   } = props;
@@ -178,9 +180,13 @@ export function useRoughArrow(props: {
     };
   });
 
-  const arrowSize = computed(() => {
+  const computedArrowHeadSize = computed(() => {
     if (line.value == null) {
       return 0;
+    }
+
+    if (arrowHeadSize != null) {
+      return arrowHeadSize;
     }
 
     // The arrow size is proportional to the line length.
@@ -191,7 +197,7 @@ export function useRoughArrow(props: {
   const arrowHead1 = computed(() =>
     createArrowHeadSvg(
       rc.value as RoughSVG,
-      arrowSize.value,
+      computedArrowHeadSize.value,
       arrowHeadType,
       options,
     ),
@@ -199,7 +205,7 @@ export function useRoughArrow(props: {
   const arrowHead2 = computed(() =>
     createArrowHeadSvg(
       rc.value as RoughSVG,
-      arrowSize.value,
+      computedArrowHeadSize.value,
       arrowHeadType,
       options,
     ),
