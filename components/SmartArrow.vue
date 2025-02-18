@@ -1,31 +1,15 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core";
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { makeId } from "@slidev/client/logic/utils.ts";
-import { useSlideContext, onSlideEnter } from "@slidev/client";
+import { useElementPosition, type SnapPosition } from "./use-element-position";
 import roughjs from "roughjs";
 
 const props = defineProps<{
   id1?: string;
   id2?: string;
-  pos1?:
-    | "top"
-    | "bottom"
-    | "left"
-    | "right"
-    | "topleft"
-    | "topright"
-    | "bottomleft"
-    | "bottomright";
-  pos2?:
-    | "top"
-    | "bottom"
-    | "left"
-    | "right"
-    | "topleft"
-    | "topright"
-    | "bottomleft"
-    | "bottomright";
+  pos1?: SnapPosition;
+  pos2?: SnapPosition;
   x1?: number | string;
   y1?: number | string;
   x2?: number | string;
@@ -36,103 +20,12 @@ const props = defineProps<{
   twoWay?: boolean;
 }>();
 
-const { $scale } = useSlideContext();
-
-// DOM element refs
-const elem1 = ref<HTMLElement | null>(null);
-const elem2 = ref<HTMLElement | null>(null);
-
-// Reactive point values
-const point1 = reactive({ x: Number(props.x1 ?? 0), y: Number(props.y1 ?? 0) });
-const point2 = reactive({ x: Number(props.x2 ?? 0), y: Number(props.y2 ?? 0) });
-
-// Update functions for each point.
-const updatePoint1 = () => {
-  if (elem1.value) {
-    const rect = elem1.value?.getBoundingClientRect();
-    const parentRect = elem1.value?.offsetParent?.getBoundingClientRect();
-    let x = (rect.left - (parentRect?.left ?? 0)) / $scale.value;
-    let y = (rect.top - (parentRect?.top ?? 0)) / $scale.value;
-    const width = rect.width / $scale.value;
-    const height = rect.height / $scale.value;
-
-    if (props.pos1?.includes("right")) {
-      x += width;
-    } else if (!props.pos1?.includes("left")) {
-      x += width / 2;
-    }
-    if (props.pos1?.includes("bottom")) {
-      y += height;
-    } else if (!props.pos1?.includes("top")) {
-      y += height / 2;
-    }
-    point1.x = x;
-    point1.y = y;
-  }
-};
-
-const updatePoint2 = () => {
-  if (elem2.value) {
-    const rect = elem2.value.getBoundingClientRect();
-    const parentRect = elem2.value.offsetParent?.getBoundingClientRect();
-    let x = (rect.left - (parentRect?.left ?? 0)) / $scale.value;
-    let y = (rect.top - (parentRect?.top ?? 0)) / $scale.value;
-    const width = rect.width / $scale.value;
-    const height = rect.height / $scale.value;
-
-    if (props.pos2?.includes("right")) {
-      x += width;
-    } else if (!props.pos2?.includes("left")) {
-      x += width / 2;
-    }
-    if (props.pos2?.includes("bottom")) {
-      y += height;
-    } else if (!props.pos2?.includes("top")) {
-      y += height / 2;
-    }
-    point2.x = x;
-    point2.y = y;
-  }
-};
-
-// A single update function to refresh both points.
-const updatePoints = () => {
-  updatePoint1();
-  updatePoint2();
-};
-
-onMounted(() => {
-  if (props.id1) {
-    elem1.value = document.getElementById(props.id1);
-    if (elem1.value) {
-      const observer = new MutationObserver(updatePoints);
-      observer.observe(elem1.value, { attributes: true });
-      const parent = elem1.value.offsetParent;
-      if (parent) {
-        const parentObserver = new MutationObserver(updatePoints);
-        parentObserver.observe(parent, { attributes: true });
-      }
-    }
-  }
-  if (props.id2) {
-    elem2.value = document.getElementById(props.id2);
-    if (elem2.value) {
-      const observer = new MutationObserver(updatePoints);
-      observer.observe(elem2.value, { attributes: true });
-      const parent = elem2.value.offsetParent;
-      if (parent) {
-        const parentObserver = new MutationObserver(updatePoints);
-        parentObserver.observe(parent, { attributes: true });
-      }
-    }
-  }
-  updatePoints(); // Do an initial update.
-});
-
-// Also update when the slide is entered.
-onSlideEnter(() => {
-  setTimeout(updatePoints);
-});
+const point1 = props.id1
+  ? useElementPosition(props.id1, props.pos1)
+  : { x: Number(props.x1 ?? 0), y: Number(props.y1 ?? 0) };
+const point2 = props.id2
+  ? useElementPosition(props.id2, props.pos2)
+  : { x: Number(props.x2 ?? 0), y: Number(props.y2 ?? 0) };
 
 const emit = defineEmits(["dblclick", "clickOutside"]);
 const id = makeId();
