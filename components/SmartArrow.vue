@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core";
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { makeId } from "@slidev/client/logic/utils.ts";
 import { useElementPosition, type SnapPosition } from "./use-element-position";
-import roughjs from "roughjs";
+import { useRoughArrow } from "./use-rough-arrow";
 
 const props = defineProps<{
   id1?: string;
@@ -37,68 +37,15 @@ const markerAttrs = {
   orient: "auto",
 };
 
-const roughSvg = computed(() => {
-  if (!props.rough) return null;
-
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  const rc = roughjs.svg(svg);
-
-  // Calculate arrow direction and position
-  const dx = point2.x - point1.x;
-  const dy = point2.y - point1.y;
-  const angle = Math.atan2(dy, dx);
-
-  // Create rough line
-  const line = rc.line(point1.x, point1.y, point2.x, point2.y, {
-    stroke: props.color || "currentColor",
-    strokeWidth: Number(props.width) || 2,
-  });
-  svg.appendChild(line);
-
-  const createArrowHead = (): SVGGElement => {
-    const arrowSize = 20;
-    const arrowAngle = Math.PI / 6; // 30 degrees
-
-    const x1 = -arrowSize * Math.cos(arrowAngle);
-    const y1 = arrowSize * Math.sin(arrowAngle);
-    const x2 = -arrowSize * Math.cos(arrowAngle);
-    const y2 = arrowSize * Math.sin(-arrowAngle);
-
-    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-
-    const line1 = rc.line(x1, y1, 0, 0, {
-      stroke: props.color || "currentColor",
-      strokeWidth: Number(props.width) || 2,
-    });
-    g.appendChild(line1);
-
-    const line2 = rc.line(x2, y2, 0, 0, {
-      stroke: props.color || "currentColor",
-      strokeWidth: Number(props.width) || 2,
-    });
-    g.appendChild(line2);
-
-    return g;
-  };
-
-  const head1 = createArrowHead();
-  head1.setAttribute(
-    "transform",
-    `translate(${point2.x},${point2.y}) rotate(${(angle * 180) / Math.PI})`,
-  );
-  svg.appendChild(head1);
-
-  if (props.twoWay) {
-    const head2 = createArrowHead();
-    head2.setAttribute(
-      "transform",
-      `translate(${point1.x},${point1.y}) rotate(${((angle + Math.PI) * 180) / Math.PI})`,
-    );
-    svg.appendChild(head2);
-  }
-
-  return svg.innerHTML;
-});
+const roughSvg = props.rough
+  ? useRoughArrow({
+      point1,
+      point2,
+      color: props.color ?? "currentColor",
+      width: Number(props.width ?? 2),
+      twoWay: props.twoWay ?? false,
+    })
+  : null;
 
 const clickArea = ref<HTMLElement>();
 onClickOutside(clickArea, () => emit("clickOutside"));

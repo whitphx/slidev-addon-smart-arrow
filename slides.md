@@ -23,7 +23,9 @@
 
 <SmartArrow x1="10" y1="20" x2="100" y2="200" color="green" width="3"  />
 
-<SmartArrow id1="block1" pos1="bottomleft" id2="block2" pos2="topleft" color="red" width="3" rough twoWay />
+<SmartArrow id1="block1" pos1="bottomleft" id2="block2" pos2="topleft" color="red" width="3" rough />
+
+<SmartArrow id1="block1" pos1="bottom" id2="block2" pos2="top" color="red" width="3" rough twoWay />
 
 ---
 
