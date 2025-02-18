@@ -1,6 +1,6 @@
 {
   "name": "slidev-addon-fancy-arrow",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "type": "module",
   "files": [
     "components",
