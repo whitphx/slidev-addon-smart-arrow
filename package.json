@@ -1,7 +1,11 @@
 {
   "name": "slidev-addon-smart-arrow",
+  "version": "0.0.1",
   "type": "module",
-  "private": true,
+  "files": [
+    "components",
+    "vite.config.ts"
+  ],
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open",
