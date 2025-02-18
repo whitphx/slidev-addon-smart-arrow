@@ -19,7 +19,21 @@ export function useElementPosition(
   const elem = ref<HTMLElement | null>(null);
   const point = ref<{ x: number; y: number } | undefined>(undefined);
 
-  const updatePoint = () => {
+  const update = () => {
+    if (!elem.value) {
+      elem.value = document.getElementById(id);
+      if (elem.value) {
+        const observer = new MutationObserver(update);
+        observer.observe(elem.value, { attributes: true });
+
+        const parent = elem.value.offsetParent;
+        if (parent) {
+          const parentObserver = new MutationObserver(update);
+          parentObserver.observe(parent, { attributes: true });
+        }
+      }
+    }
+
     if (!elem.value) {
       point.value = undefined;
       return;
@@ -49,23 +63,12 @@ export function useElementPosition(
 
   onSlideEnter(() => {
     setTimeout(() => {
-      updatePoint();
+      update();
     });
   });
 
   onMounted(() => {
-    elem.value = document.getElementById(id);
-    if (elem.value) {
-      const observer = new MutationObserver(updatePoint);
-      observer.observe(elem.value, { attributes: true });
-
-      const parent = elem.value.offsetParent;
-      if (parent) {
-        const parentObserver = new MutationObserver(updatePoint);
-        parentObserver.observe(parent, { attributes: true });
-      }
-    }
-    updatePoint();
+    update();
   });
 
   return point;
