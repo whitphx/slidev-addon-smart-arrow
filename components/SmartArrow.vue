@@ -48,47 +48,50 @@ const roughSvg = computed(() => {
   const dy = point2.y - point1.y;
   const angle = Math.atan2(dy, dx);
 
-  // Arrow head size
-  const arrowSize = 20;
-  const arrowAngle = Math.PI / 6; // 30 degrees
-
   // Create rough line
   const line = rc.line(point1.x, point1.y, point2.x, point2.y, {
     stroke: props.color || "currentColor",
     strokeWidth: Number(props.width) || 2,
   });
+  svg.appendChild(line);
 
-  // Create arrow heads
-  const elementSVGs = [line.outerHTML];
-
-  // Function to create arrow head points
   const createArrowHead = (tipX: number, tipY: number, baseAngle: number) => {
-    const x1 = tipX - arrowSize * Math.cos(baseAngle - arrowAngle);
-    const y1 = tipY - arrowSize * Math.sin(baseAngle - arrowAngle);
-    const x2 = tipX - arrowSize * Math.cos(baseAngle + arrowAngle);
-    const y2 = tipY - arrowSize * Math.sin(baseAngle + arrowAngle);
+    const arrowSize = 20;
+    const arrowAngle = Math.PI / 6; // 30 degrees
 
-    return (
-      rc.line(x1, y1, tipX, tipY, {
-        stroke: props.color || "currentColor",
-        strokeWidth: Number(props.width) || 2,
-      }).outerHTML +
-      rc.line(x2, y2, tipX, tipY, {
-        stroke: props.color || "currentColor",
-        strokeWidth: Number(props.width) || 2,
-      }).outerHTML
+    const x1 = -arrowSize * Math.cos(arrowAngle);
+    const y1 = arrowSize * Math.sin(arrowAngle);
+    const x2 = -arrowSize * Math.cos(arrowAngle);
+    const y2 = arrowSize * Math.sin(-arrowAngle);
+
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute(
+      "transform",
+      `translate(${tipX},${tipY}) rotate(${(baseAngle * 180) / Math.PI})`,
     );
+
+    const line1 = rc.line(x1, y1, 0, 0, {
+      stroke: props.color || "currentColor",
+      strokeWidth: Number(props.width) || 2,
+    });
+    g.appendChild(line1);
+
+    const line2 = rc.line(x2, y2, 0, 0, {
+      stroke: props.color || "currentColor",
+      strokeWidth: Number(props.width) || 2,
+    });
+    g.appendChild(line2);
+
+    return g;
   };
 
-  // Forward arrow
-  elementSVGs.push(createArrowHead(point2.x, point2.y, angle));
+  svg.appendChild(createArrowHead(point2.x, point2.y, angle));
 
-  // Reverse arrow for two-way
   if (props.twoWay) {
-    elementSVGs.push(createArrowHead(point1.x, point1.y, angle + Math.PI));
+    svg.appendChild(createArrowHead(point1.x, point1.y, angle + Math.PI));
   }
 
-  return elementSVGs.join("");
+  return svg.innerHTML;
 });
 
 const clickArea = ref<HTMLElement>();
