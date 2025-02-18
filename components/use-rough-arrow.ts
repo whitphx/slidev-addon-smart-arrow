@@ -77,11 +77,16 @@ export function useRoughArrow(props: {
 
     if (centerPositionParam === 0) {
       // Straight line.
-      // The radius can be interpreted as infinity.
-      return roughSvg.line(point1.x, point1.y, point2.x, point2.y, {
+      // This can be interpreted as the arc's center is at infinity.
+      const svg = roughSvg.line(point1.x, point1.y, point2.x, point2.y, {
         stroke: color,
         strokeWidth: width,
       });
+      return {
+        svg,
+        angle1: 0,
+        angle2: 0,
+      };
     }
 
     // Midpoint of the chord (the line segment connecting the endpoints).
@@ -140,10 +145,25 @@ export function useRoughArrow(props: {
     }
 
     const D = 2 * R;
-    return roughSvg.arc(center.x, center.y, D, D, startAngle, endAngle, false, {
-      stroke: color,
-      strokeWidth: width,
-    });
+    const svg = roughSvg.arc(
+      center.x,
+      center.y,
+      D,
+      D,
+      startAngle,
+      endAngle,
+      false,
+      {
+        stroke: color,
+        strokeWidth: width,
+      },
+    );
+
+    return {
+      svg,
+      angle1,
+      angle2,
+    };
   });
 
   return computed(() => {
@@ -157,22 +177,18 @@ export function useRoughArrow(props: {
       return null;
     }
 
-    svg.value.appendChild(line.value);
-
-    const dx = point2Ref.value.x - point1Ref.value.x;
-    const dy = point2Ref.value.y - point1Ref.value.y;
-    const angle = Math.atan2(dy, dx);
+    svg.value.appendChild(line.value.svg);
 
     arrowHead2.value.setAttribute(
       "transform",
-      `translate(${point2Ref.value.x},${point2Ref.value.y}) rotate(${(angle * 180) / Math.PI})`,
+      `translate(${point2Ref.value.x},${point2Ref.value.y}) rotate(${(line.value.angle2 * 180) / Math.PI + (centerPositionParam > 0 ? 90 : -90)})`,
     );
     svg.value.appendChild(arrowHead2.value);
 
     if (twoWay) {
       arrowHead1.value.setAttribute(
         "transform",
-        `translate(${point1Ref.value.x},${point1Ref.value.y}) rotate(${(angle * 180) / Math.PI + 180})`,
+        `translate(${point1Ref.value.x},${point1Ref.value.y}) rotate(${(line.value.angle1 * 180) / Math.PI + (centerPositionParam > 0 ? -90 : 90)})`,
       );
       svg.value.appendChild(arrowHead1.value);
     }
