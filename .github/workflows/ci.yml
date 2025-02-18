@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 concurrency:
   # https://stackoverflow.com/a/72408109
@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
@@ -84,7 +84,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   release:
-    needs: [build-demo]  # Semantically, this job can be run just after test, but we wait for build-demo to ensure the build is successful.
+    needs: [build-demo] # Semantically, this job can be run just after test, but we wait for build-demo to ensure the build is successful.
 
     if: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch }}
 
@@ -104,7 +104,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
