@@ -93,10 +93,12 @@ export function useRoughArrow(props: {
         point2.y,
         options,
       );
+      const angle =
+        Math.atan2(point2.y - point1.y, point2.x - point1.x) - Math.PI / 2;
       return {
         svg,
-        angle1: 0,
-        angle2: 0,
+        angle1: angle,
+        angle2: angle,
         lineLength: Math.hypot(point2.x - point1.x, point2.y - point1.y),
       };
     }
