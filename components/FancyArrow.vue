@@ -99,16 +99,5 @@ onClickOutside(clickArea, () => emit("clickOutside"));
         @dblclick="emit('dblclick')"
       />
     </template>
-    <line
-      ref="clickArea"
-      :x1="point1.x"
-      :y1="point1.y"
-      :x2="point2.x"
-      :y2="point2.y"
-      stroke="transparent"
-      stroke-linecap="round"
-      :stroke-width="20"
-      @dblclick="emit('dblclick')"
-    />
   </svg>
 </template>
