@@ -46,7 +46,9 @@ export function useElementPosition(
   };
 
   onSlideEnter(() => {
-    updatePoint();
+    setTimeout(() => {
+      updatePoint();
+    });
   });
 
   onMounted(() => {
