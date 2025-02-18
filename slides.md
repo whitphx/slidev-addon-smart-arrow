@@ -27,7 +27,7 @@
 
 <FancyArrow id1="block1" pos1="bottom" id2="block2" pos2="top" color="red" width="3" twoWay />
 
-<FancyArrow id1="block1" pos1="bottomright" id2="block2" pos2="topright" color="red" width="3" twoWay arc="0.5" arrowHeadType="polygon" />
+<FancyArrow id1="block1" pos1="bottomright" id2="block2" pos2="topright" color="red" width="3" twoWay arc="0.5" arrowHeadType="polygon" arrowHeadSize="30" />
 
 ---
 

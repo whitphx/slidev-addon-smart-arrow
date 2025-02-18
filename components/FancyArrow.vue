@@ -18,6 +18,7 @@ const props = defineProps<{
   twoWay?: boolean;
   arc?: number | string;
   arrowHeadType?: "line" | "polygon";
+  arrowHeadSize?: number | string;
 }>();
 
 const point1 = props.id1
@@ -35,6 +36,7 @@ const roughSvg = useRoughArrow({
   twoWay: props.twoWay ?? false,
   centerPositionParam: Number(props.arc ?? 0),
   arrowHeadType: props.arrowHeadType ?? "line",
+  arrowHeadSize: props.arrowHeadSize ? Number(props.arrowHeadSize) : null,
 });
 </script>
 
