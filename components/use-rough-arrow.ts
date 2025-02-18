@@ -5,9 +5,8 @@ type RoughSVG = ReturnType<typeof roughjs.svg>;
 
 const createArrowHeadSvg = (
   rc: RoughSVG,
-  color: string,
-  width: number,
   arrowSize: number,
+  options: Parameters<RoughSVG["line"]>[4],
 ): SVGGElement => {
   const arrowAngle = Math.PI / 6; // 30 degrees
 
@@ -18,16 +17,10 @@ const createArrowHeadSvg = (
 
   const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
-  const line1 = rc.line(x1, y1, 0, 0, {
-    stroke: color,
-    strokeWidth: width,
-  });
+  const line1 = rc.line(x1, y1, 0, 0, options);
   g.appendChild(line1);
 
-  const line2 = rc.line(x2, y2, 0, 0, {
-    stroke: color,
-    strokeWidth: width,
-  });
+  const line2 = rc.line(x2, y2, 0, 0, options);
   g.appendChild(line2);
 
   return g;
@@ -177,10 +170,10 @@ export function useRoughArrow(props: {
   });
 
   const arrowHead1 = computed(() =>
-    createArrowHeadSvg(rc.value as RoughSVG, color, width, arrowSize.value),
+    createArrowHeadSvg(rc.value as RoughSVG, arrowSize.value, options),
   );
   const arrowHead2 = computed(() =>
-    createArrowHeadSvg(rc.value as RoughSVG, color, width, arrowSize.value),
+    createArrowHeadSvg(rc.value as RoughSVG, arrowSize.value, options),
   );
 
   return computed(() => {
