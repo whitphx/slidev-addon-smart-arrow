@@ -55,7 +55,7 @@ const roughSvg = computed(() => {
   });
   svg.appendChild(line);
 
-  const createArrowHead = (tipX: number, tipY: number, baseAngle: number) => {
+  const createArrowHead = (): SVGGElement => {
     const arrowSize = 20;
     const arrowAngle = Math.PI / 6; // 30 degrees
 
@@ -65,10 +65,6 @@ const roughSvg = computed(() => {
     const y2 = arrowSize * Math.sin(-arrowAngle);
 
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    g.setAttribute(
-      "transform",
-      `translate(${tipX},${tipY}) rotate(${(baseAngle * 180) / Math.PI})`,
-    );
 
     const line1 = rc.line(x1, y1, 0, 0, {
       stroke: props.color || "currentColor",
@@ -85,10 +81,20 @@ const roughSvg = computed(() => {
     return g;
   };
 
-  svg.appendChild(createArrowHead(point2.x, point2.y, angle));
+  const head1 = createArrowHead();
+  head1.setAttribute(
+    "transform",
+    `translate(${point2.x},${point2.y}) rotate(${(angle * 180) / Math.PI})`,
+  );
+  svg.appendChild(head1);
 
   if (props.twoWay) {
-    svg.appendChild(createArrowHead(point1.x, point1.y, angle + Math.PI));
+    const head2 = createArrowHead();
+    head2.setAttribute(
+      "transform",
+      `translate(${point1.x},${point1.y}) rotate(${((angle + Math.PI) * 180) / Math.PI})`,
+    );
+    svg.appendChild(head2);
   }
 
   return svg.innerHTML;
