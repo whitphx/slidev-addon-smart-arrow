@@ -7,8 +7,8 @@ const createArrowHeadSvg = (
   rc: RoughSVG,
   color: string,
   width: number,
+  arrowSize: number,
 ): SVGGElement => {
-  const arrowSize = 20;
   const arrowAngle = Math.PI / 6; // 30 degrees
 
   const x1 = -arrowSize * Math.cos(arrowAngle);
@@ -55,13 +55,6 @@ export function useRoughArrow(props: {
   );
   const rc = ref(roughjs.svg(svg.value));
 
-  const arrowHead1 = ref(
-    createArrowHeadSvg(rc.value as RoughSVG, color, width),
-  );
-  const arrowHead2 = ref(
-    createArrowHeadSvg(rc.value as RoughSVG, color, width),
-  );
-
   const line = computed(() => {
     if (!point1Ref.value || !point2Ref.value) {
       return null;
@@ -86,6 +79,7 @@ export function useRoughArrow(props: {
         svg,
         angle1: 0,
         angle2: 0,
+        lineLength: Math.hypot(point2.x - point1.x, point2.y - point1.y),
       };
     }
 
@@ -163,8 +157,26 @@ export function useRoughArrow(props: {
       svg,
       angle1,
       angle2,
+      lineLength: R * (endAngle - startAngle),
     };
   });
+
+  const arrowSize = computed(() => {
+    if (line.value == null) {
+      return 0;
+    }
+
+    // The arrow size is proportional to the line length.
+    // The constant factor is chosen so that the arrow size is 30 when the line length is 200.
+    return (30 * Math.log(line.value.lineLength)) / Math.log(200);
+  });
+
+  const arrowHead1 = computed(() =>
+    createArrowHeadSvg(rc.value as RoughSVG, color, width, arrowSize.value),
+  );
+  const arrowHead2 = computed(() =>
+    createArrowHeadSvg(rc.value as RoughSVG, color, width, arrowSize.value),
+  );
 
   return computed(() => {
     svg.value.innerHTML = "";
