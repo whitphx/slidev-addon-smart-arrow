@@ -51,6 +51,6 @@ onClickOutside(clickArea, () => emit("clickOutside"));
     :width="slideWidth"
     :height="slideHeight"
   >
-    <g v-html="roughSvg" @dblclick="emit('dblclick')" />
+    <g v-html="roughSvg" />
   </svg>
 </template>
