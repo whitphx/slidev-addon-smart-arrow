@@ -22,10 +22,10 @@ const props = defineProps<{
 
 const point1 = props.id1
   ? useElementPosition(props.id1, props.pos1)
-  : { x: Number(props.x1 ?? 0), y: Number(props.y1 ?? 0) };
+  : ref({ x: Number(props.x1 ?? 0), y: Number(props.y1 ?? 0) });
 const point2 = props.id2
   ? useElementPosition(props.id2, props.pos2)
-  : { x: Number(props.x2 ?? 0), y: Number(props.y2 ?? 0) };
+  : ref({ x: Number(props.x2 ?? 0), y: Number(props.y2 ?? 0) });
 
 const emit = defineEmits(["dblclick", "clickOutside"]);
 const id = makeId();
@@ -53,6 +53,7 @@ onClickOutside(clickArea, () => emit("clickOutside"));
 
 <template>
   <svg
+    v-if="point1 && point2"
     class="absolute left-0 top-0"
     :width="Math.max(point1.x, point2.x) + 50"
     :height="Math.max(point1.y, point2.y) + 50"

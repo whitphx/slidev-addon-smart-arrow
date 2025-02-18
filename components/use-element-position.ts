@@ -1,4 +1,4 @@
-import { ref, reactive, onMounted } from "vue";
+import { ref, onMounted, type Ref } from "vue";
 import { useSlideContext, onSlideEnter } from "@slidev/client";
 
 export type SnapPosition =
@@ -14,13 +14,16 @@ export type SnapPosition =
 export function useElementPosition(
   id: string,
   pos?: SnapPosition,
-): { x: number; y: number } {
+): Ref<{ x: number; y: number } | undefined> {
   const { $scale } = useSlideContext();
   const elem = ref<HTMLElement | null>(null);
-  const point = reactive({ x: 0, y: 0 });
+  const point = ref<{ x: number; y: number } | undefined>(undefined);
 
   const updatePoint = () => {
-    if (!elem.value) return;
+    if (!elem.value) {
+      point.value = undefined;
+      return;
+    }
 
     const rect = elem.value.getBoundingClientRect();
     const parentRect = elem.value.offsetParent?.getBoundingClientRect();
@@ -41,8 +44,7 @@ export function useElementPosition(
       y += height / 2;
     }
 
-    point.x = x;
-    point.y = y;
+    point.value = { x, y };
   };
 
   onSlideEnter(() => {
