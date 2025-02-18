@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 import { slideWidth, slideHeight } from "@slidev/client";
 import { useElementPosition, type SnapPosition } from "./use-element-position";
@@ -28,8 +27,6 @@ const point2 = props.id2
   ? useElementPosition(props.id2, props.pos2)
   : ref({ x: Number(props.x2 ?? 0), y: Number(props.y2 ?? 0) });
 
-const emit = defineEmits(["dblclick", "clickOutside"]);
-
 const roughSvg = useRoughArrow({
   point1,
   point2,
@@ -39,9 +36,6 @@ const roughSvg = useRoughArrow({
   centerPositionParam: Number(props.arc ?? 0),
   arrowHeadType: props.arrowHeadType ?? "line",
 });
-
-const clickArea = ref<HTMLElement>();
-onClickOutside(clickArea, () => emit("clickOutside"));
 </script>
 
 <template>
