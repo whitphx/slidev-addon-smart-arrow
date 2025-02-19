@@ -47,7 +47,6 @@ export function useRoughArrow(props: {
   arrowHeadType: "line" | "polygon";
   arrowHeadSize: number | null;
   roughness?: number;
-  bowing?: number;
   seed?: number;
   twoWay: boolean;
   centerPositionParam: number;
@@ -60,7 +59,6 @@ export function useRoughArrow(props: {
     arrowHeadType,
     arrowHeadSize,
     roughness,
-    bowing,
     seed,
     twoWay,
     centerPositionParam,
@@ -70,8 +68,8 @@ export function useRoughArrow(props: {
     strokeWidth: width,
     fill: color,
     fillStyle: "solid",
+    // We don't support the `bowing` param because it's not so effective for arc.
     ...(roughness !== undefined && { roughness }),
-    ...(bowing !== undefined && { bowing }),
     ...(seed !== undefined && { seed }),
   } as const;
   const svg = ref<SVGSVGElement>(

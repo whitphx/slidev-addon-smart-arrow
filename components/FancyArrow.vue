@@ -20,7 +20,6 @@ const props = defineProps<{
   arrowHeadType?: "line" | "polygon";
   arrowHeadSize?: number | string;
   roughness?: number | string;
-  bowing?: number | string;
   seed?: number | string;
 }>();
 
@@ -41,7 +40,6 @@ const roughSvg = useRoughArrow({
   arrowHeadType: props.arrowHeadType ?? "line",
   arrowHeadSize: props.arrowHeadSize ? Number(props.arrowHeadSize) : null,
   roughness: props.roughness ? Number(props.roughness) : undefined,
-  bowing: props.bowing ? Number(props.bowing) : undefined,
   seed: props.seed ? Number(props.seed) : undefined,
 });
 </script>
