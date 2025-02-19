@@ -46,6 +46,9 @@ export function useRoughArrow(props: {
   width: number;
   arrowHeadType: "line" | "polygon";
   arrowHeadSize: number | null;
+  roughness?: number;
+  bowing?: number;
+  seed?: number;
   twoWay: boolean;
   centerPositionParam: number;
 }) {
@@ -56,17 +59,21 @@ export function useRoughArrow(props: {
     width,
     arrowHeadType,
     arrowHeadSize,
+    roughness,
+    bowing,
+    seed,
     twoWay,
     centerPositionParam,
   } = props;
-
   const options = {
     stroke: color,
     strokeWidth: width,
     fill: color,
     fillStyle: "solid",
-  };
-
+    ...(roughness !== undefined && { roughness }),
+    ...(bowing !== undefined && { bowing }),
+    ...(seed !== undefined && { seed }),
+  } as const;
   const svg = ref<SVGSVGElement>(
     document.createElementNS("http://www.w3.org/2000/svg", "svg"),
   );
