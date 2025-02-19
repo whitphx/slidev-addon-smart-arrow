@@ -1,5 +1,11 @@
 # slidev-addon-fancy-arrow
 
+## 0.2.0
+
+### Minor Changes
+
+- [#8](https://github.com/whitphx/slidev-addon-fancy-arrow/pull/8) [`f8a3adb`](https://github.com/whitphx/slidev-addon-fancy-arrow/commit/f8a3adb61f234b5c26a5b8e13e94a2bb31a43ff4) Thanks [@whitphx](https://github.com/whitphx)! - Add roughness and seed props
+
 ## 0.1.0
 
 ### Minor Changes
