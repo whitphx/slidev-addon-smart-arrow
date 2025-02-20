@@ -12,6 +12,40 @@ mdc: true
 
 ---
 
+## Slidev
+
+<img src="https://sli.dev/logo.svg" class="w-10" id="slidev-logo" />
+<div bg-white fit-content>
+<img src="https://raw.githubusercontent.com/dcurtis/markdown-mark/refs/heads/master/svg/markdown-mark.svg" class="w-10" id="markdown-mark" />
+</div>
+
+<FancyArrow id1="slidev-logo" pos1="bottomright" id2="slidev-text" pos2="bottomleft" color="teal" width="2" arc="-0.3" seed="1" roughness="2" />
+<FancyArrow id1="markdown-mark" pos1="bottomright" id2="markdown-text" pos2="bottomleft" color="gray" width="2" arc="-0.3" seed="1" roughness="2" />
+
+<span id="slidev-text" v-mark.teal>Slidev</span> (slide + dev, /slaɪdɪv/) is a web-based slides maker and presenter. It's designed for developers to focus on writing content in <span id="markdown-text" v-mark.gray>Markdown</span>. With the power of web technologies like Vue, you are able to deliver pixel-perfect designs with interactive demos to your presentation.
+
+
+---
+
+### Snapped to animated elements
+
+<div v-click p-8>
+    <span id="foo">Foo</span>
+</div>
+
+<div :class="$clicks === 0 ? 'translate-y--16' : ''" p-8>
+    <span id="bar">Bar</span>
+</div>
+
+<FancyArrow v-click="1" forward:delay-1000 id1="foo" pos1="bottomleft" id2="bar" pos2="topleft" color="red" width="2" arc="-0.3" seed="1" roughness="2" />
+
+<div v-click p-8 :class="$clicks === 0 ? 'translate-y--32' : $clicks === 1 ? 'translate-y--16' : ''">
+    <span id="baz">Baz</span>
+</div>
+
+<FancyArrow v-click="2" forward:delay-1000 id1="bar" pos1="bottomleft" id2="baz" pos2="topleft" color="green" width="2" arc="-0.3" seed="1" roughness="2" />
+---
+
 # Demo
 
 <div id="block1">Block 1</div>
